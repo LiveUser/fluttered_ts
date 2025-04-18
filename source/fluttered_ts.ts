@@ -87,7 +87,7 @@ enum InputType {
 class Size{
     public size:number;
     public unit:SizeUnit;
-    constructor (size: number, unit?:SizeUnit){
+    constructor (size: number, unit = SizeUnit.px){
         this.size = size;
         this.unit = unit;
     }
@@ -357,7 +357,7 @@ function Container(parameters:{
     crossAxisAlignment?: CrossAxisAlignment,
     //TODO: Flex direction
     flexDirection?: FlexDirection,
-    children: HTMLElement | HTMLElement[],
+    children?: HTMLElement | HTMLElement[],
 }):HTMLElement{
     //Create element
     var element:HTMLElement = document.createElement("div");
@@ -378,6 +378,7 @@ function Container(parameters:{
         }
     }
     if(parameters.height != null){
+        element.style.height = stringifySize(parameters.height);
         //Remove Margin
         if(parameters.margin != null){
             element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.margin.top)} - ${stringifySize(parameters.margin.bottom)})`;
@@ -397,6 +398,9 @@ function Container(parameters:{
             if(parameters.style.border.color != null){
                 element.style.borderColor = parameters.style.border.color.color;
             }
+        }
+        if(parameters.style.borderRadius != null){
+            element.style.borderRadius = stringifySize(parameters.style.borderRadius);
         }
     }
     //Margin
@@ -433,11 +437,13 @@ function Container(parameters:{
     }
 
     //Append child
-    if(parameters.children instanceof  HTMLElement){
-        element.append(parameters.children);
-    }else{
-        for(let i:number = 0; i < parameters.children.length; i++){
-            element.append(parameters.children[i]);
+    if(parameters.children != null){
+        if(parameters.children instanceof  HTMLElement){
+            element.append(parameters.children);
+        }else{
+            for(let i:number = 0; i < parameters.children.length; i++){
+                element.append(parameters.children[i]);
+            }
         }
     }
 
@@ -680,7 +686,34 @@ function StatefulWidget(parameters:{
     return element;
 }
 //FutureBuilder
+function FutureBuilder(parameters:{
+    id:string,
+    future:Promise<any>,
+    onLoad:HTMLElement,
+    onFinished:(data?:any)=>HTMLElement,
+    onError: (error:any)=>HTMLElement,
+}):HTMLElement{
+    var element:HTMLElement = document.createElement("span");
 
+    //Content of the FutureBuilder
+    let content:HTMLElement = parameters.onLoad;
+
+    //Add on load
+    element.append(content);
+    //Call future
+    parameters.future.then((data)=>{
+        content = parameters.onFinished(data);
+        SetState(parameters.id);
+    }).catch((error)=>{
+        content = parameters.onError(error);
+        SetState(parameters.id);
+    });
+    //return element
+    return StatefulWidget({
+        id: parameters.id,
+        child: ()=> content,
+    });
+}
 //Export all
 //---------------------------------------------------
 export {
@@ -707,4 +740,6 @@ export {
     InputField,
     StatefulWidget,
     GestureDetector,
+    FutureBuilder,
 };
+//Add support for custom fonts

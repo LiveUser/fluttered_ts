@@ -92,7 +92,7 @@ var InputType;
 //Classes
 //------------------------------------------------------------------------------------------------
 class Size {
-    constructor(size, unit) {
+    constructor(size, unit = SizeUnit.px) {
         this.size = size;
         this.unit = unit;
     }
@@ -319,6 +319,9 @@ function getLinkTarget(target) {
         return "_self";
     }
 }
+function SetState(id) {
+    document.getElementById(id).dispatchEvent(new Event("reloadStatefulWidget"));
+}
 //Widgets (Functions that return HTML elements)
 //------------------------------------------------------------------------------------------------
 //Add Scaffolds in different elements called Page to support adding pages on top of one another
@@ -363,6 +366,7 @@ function Container(parameters) {
         }
     }
     if (parameters.height != null) {
+        element.style.height = stringifySize(parameters.height);
         //Remove Margin
         if (parameters.margin != null) {
             element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.margin.top)} - ${stringifySize(parameters.margin.bottom)})`;
@@ -382,6 +386,9 @@ function Container(parameters) {
             if (parameters.style.border.color != null) {
                 element.style.borderColor = parameters.style.border.color.color;
             }
+        }
+        if (parameters.style.borderRadius != null) {
+            element.style.borderRadius = stringifySize(parameters.style.borderRadius);
         }
     }
     //Margin
@@ -414,12 +421,14 @@ function Container(parameters) {
         element.style.flexDirection = "column";
     }
     //Append child
-    if (parameters.children instanceof HTMLElement) {
-        element.append(parameters.children);
-    }
-    else {
-        for (let i = 0; i < parameters.children.length; i++) {
-            element.append(parameters.children[i]);
+    if (parameters.children != null) {
+        if (parameters.children instanceof HTMLElement) {
+            element.append(parameters.children);
+        }
+        else {
+            for (let i = 0; i < parameters.children.length; i++) {
+                element.append(parameters.children[i]);
+            }
         }
     }
     //return element
@@ -610,6 +619,27 @@ function StatefulWidget(parameters) {
     return element;
 }
 //FutureBuilder
+function FutureBuilder(parameters) {
+    var element = document.createElement("span");
+    //Content of the FutureBuilder
+    let content = parameters.onLoad;
+    //Add on load
+    element.append(content);
+    //Call future
+    parameters.future.then((data) => {
+        content = parameters.onFinished(data);
+        SetState(parameters.id);
+    }).catch((error) => {
+        content = parameters.onError(error);
+        SetState(parameters.id);
+    });
+    //return element
+    return StatefulWidget({
+        id: parameters.id,
+        child: () => content,
+    });
+}
 //Export all
 //---------------------------------------------------
-export { SizeUnit, Size, TextAlign, TextStyle, Color, BoxStyle, Border, BorderType, EdgeInsets, MainAxisAlignment, CrossAxisAlignment, FlexDirection, LinkTarget, Link, InputType, Scaffold, Container, TextWidget, Image, InputField, StatefulWidget, GestureDetector, };
+export { SizeUnit, Size, TextAlign, TextStyle, Color, BoxStyle, Border, BorderType, EdgeInsets, MainAxisAlignment, CrossAxisAlignment, FlexDirection, LinkTarget, Link, InputType, SetState, Scaffold, Container, TextWidget, Image, InputField, StatefulWidget, GestureDetector, FutureBuilder, };
+//Add support for custom fonts

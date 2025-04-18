@@ -2,92 +2,129 @@ import * as fts from './fluttered_ts.js';
 
 fts.Scaffold({
     body: fts.Container({
-        width: new fts.Size(100, fts.SizeUnit.percent),
-        crossAxisAlignment: fts.CrossAxisAlignment.center,
+        width: new fts.Size(100,fts.SizeUnit.percent),
+        height: new fts.Size(100,fts.SizeUnit.percent),
+        style: new fts.BoxStyle({
+            color: fts.Color.fromHex("#69b7f8"),
+        }),
         children: [
+            AppBar(),
             fts.Container({
-                width: new fts.Size(100, fts.SizeUnit.percent),
-                height: new fts.Size(250),
-                style: new fts.BoxStyle({
-                    color: fts.Color.fromName("yellow"),
-                    borderRadius: new fts.Size(10),
-                    border: new fts.Border({
-                        borderType: fts.BorderType.dashed,
-                        size: new fts.Size(2),
-                        color: fts.Color.fromName("green"),
-                    }),
-                }),
-                margin: fts.EdgeInsets.all(new fts.Size(10)),
-                padding: fts.EdgeInsets.all(new fts.Size(10)),
-                mainAxisAlignment: fts.MainAxisAlignment.center,
+                width: new fts.Size(100,fts.SizeUnit.percent),
+                height: new fts.Size(100,fts.SizeUnit.percent),
+                padding: fts.EdgeInsets.all(new fts.Size(20)),
                 crossAxisAlignment: fts.CrossAxisAlignment.center,
-                children: fts.TextWidget({
-                    text: "Hello World",
-                    id: "testText",
-                    link: new fts.Link({
-                        link: "https://www.google.com/",
-                        target: fts.LinkTarget.openTab,
+                children: [
+                    WhiteBox("A simple website showcasing the power of Fluttered TypeScript"),
+                    //Using a container as SizedBox
+                    fts.Container({
+                        height: new fts.Size(20),
                     }),
-                    textAlign: fts.TextAlign.center,
-                    style: new fts.TextStyle({
-                        fontSize: new fts.Size(20),
-                        fontFamily: "Arial",
-                        color: fts.Color.fromName("blue"),
+                    fts.Image({
+                        source: "https://lh3.googleusercontent.com/0qoi_Y1I5rKQyRjlG5vCy0qN2yCFJ4XIb4g7RPHHiYfyewEUvtUBg33kDvi3ptuhO6FIpu2wG-EaKDMNj5ZrYOTVbrbrwzQD0MmG_p6c2dcGto2AQnhwieA0Ag4bB_9j8g=w1280",
+                        width: new fts.Size(50,fts.SizeUnit.percent),
                     }),
-                }),
-            }),
-            fts.Container({
-                crossAxisAlignment: fts.CrossAxisAlignment.center,
-                margin: fts.EdgeInsets.only({
-                    top: new fts.Size(20),
-                    bottom: new fts.Size(20),
-                }),
-                children: fts.Image({
-                    source: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Test.svg/1200px-Test.svg.png",
-                    width: new fts.Size(30, fts.SizeUnit.percent),
-                }),
-            }),
-            fts.InputField({
-                width: new fts.Size(30, fts.SizeUnit.percent),
-                onInput: (newValue)=>{
-                    document.getElementById("testText").innerHTML = newValue;
-                },
-            }),
-            //Create a Stateful Widget Counter
-            Counter(),
-        ],
-    }),
-});
-
-function Counter():HTMLElement{
-    var counter:number = 0;
-    var id:string = "counter";
-    var statefulWidget = fts.StatefulWidget({
-        id: id,
-        child: ()=>{
-            return fts.GestureDetector({
-                onTap: ()=>{
-                    counter++;
-                    fts.SetState(id);
-                },
-                child: fts.Container({
-                    padding: fts.EdgeInsets.all(new fts.Size(10)),
-                    margin: fts.EdgeInsets.only({
-                        top: new fts.Size(10),
-                        bottom: new fts.Size(10),
+                    fts.Container({
+                        height: new fts.Size(20),
                     }),
-                    style: new fts.BoxStyle({
-                        color: fts.Color.fromName("blue"),
-                    }),
-                    children: fts.TextWidget({
-                        text: `Tapped: ${counter} times`,
+                    fts.TextWidget({
+                        id: "textField",
+                        text: "Input will be shown here",
                         style: new fts.TextStyle({
                             color: fts.Color.fromName("white"),
                         }),
                     }),
-                }),
+                    fts.InputField({
+                        width: new fts.Size(50, fts.SizeUnit.percent),
+                        onInput: (newValue)=>{
+                            document.getElementById("textField").innerHTML = "Input: " + newValue;
+                        },
+                    }),
+                    fts.Container({
+                        height: new fts.Size(20),
+                    }),
+                    Counter(),
+                ],
+            }),
+        ],
+    }),
+});
+
+function AppBar():HTMLElement{
+    return fts.Container({
+        width: new fts.Size(100,fts.SizeUnit.percent),
+        height: new fts.Size(60),
+        style: new fts.BoxStyle({
+            color: fts.Color.fromHex("#0e47a1"),
+        }),
+        mainAxisAlignment: fts.MainAxisAlignment.center,
+        crossAxisAlignment: fts.CrossAxisAlignment.center,
+        children: fts.TextWidget({
+            text: "Fluttered TypeScript",
+            style: new fts.TextStyle({
+                color: fts.Color.fromName("white"),
+                fontSize: new fts.Size(20),
+                fontFamily: "Trebuchet MS",
+            }),
+        }),
+    });
+}
+function WhiteBox(text:string):HTMLElement{
+    return fts.Container({
+        width: new fts.Size(50, fts.SizeUnit.percent),
+        style: new fts.BoxStyle({
+            color: fts.Color.fromName("white"),
+            borderRadius: new fts.Size(10),
+        }),
+        padding: fts.EdgeInsets.all(new fts.Size(20)),
+        children: fts.TextWidget({
+            text: text,
+            textAlign: fts.TextAlign.center,
+        }),
+    });
+}
+function Counter():HTMLElement{
+    let counter = 0;
+    const id = "counter";
+    return fts.StatefulWidget({
+        id: id,
+        child: ()=>{
+            return fts.Container({
+                crossAxisAlignment: fts.CrossAxisAlignment.center,
+                children: [
+                    fts.TextWidget({
+                        text: "Stateful Widget test: " + (counter == 0 ? "" : counter.toString()),
+                        style: new fts.TextStyle({
+                            color: fts.Color.fromName("white"),
+                        }),
+                    }),
+                    fts.GestureDetector({
+                        onTap: ()=>{
+                            counter++;
+                            fts.SetState("counter");
+                        },
+                        child: fts.Container({
+                            width: new fts.Size(50),
+                            height: new fts.Size(50),
+                            padding: fts.EdgeInsets.all(new fts.Size(20)),
+                            style: new fts.BoxStyle({
+                                color: fts.Color.fromName("white"),
+                                borderRadius: new fts.Size(100, fts.SizeUnit.percent),
+                            }),
+                            mainAxisAlignment: fts.MainAxisAlignment.center,
+                            crossAxisAlignment: fts.CrossAxisAlignment.center,
+                            children: [
+                                fts.TextWidget({
+                                    text: "+",
+                                    style: new fts.TextStyle({
+                                        color: fts.Color.fromHex("#0e47a1"),
+                                    }),
+                                }),
+                            ],
+                        }),
+                    }),
+                ],
             });
         },
     });
-    return statefulWidget;
 }
