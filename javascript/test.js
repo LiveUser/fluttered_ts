@@ -52,6 +52,40 @@ fts.Scaffold({
                     document.getElementById("testText").innerHTML = newValue;
                 },
             }),
+            //Create a Stateful Widget Counter
+            Counter(),
         ],
     }),
 });
+function Counter() {
+    var counter = 0;
+    var id = "counter";
+    var statefulWidget = fts.StatefulWidget({
+        id: id,
+        child: () => {
+            return fts.GestureDetector({
+                onTap: () => {
+                    counter++;
+                    document.getElementById(id).dispatchEvent(new Event("reloadStatefulWidget"));
+                },
+                child: fts.Container({
+                    padding: fts.EdgeInsets.all(new fts.Size(10)),
+                    margin: fts.EdgeInsets.only({
+                        top: new fts.Size(10),
+                        bottom: new fts.Size(10),
+                    }),
+                    style: new fts.BoxStyle({
+                        color: fts.Color.fromName("blue"),
+                    }),
+                    children: fts.TextWidget({
+                        text: `Tapped: ${counter} times`,
+                        style: new fts.TextStyle({
+                            color: fts.Color.fromName("white"),
+                        }),
+                    }),
+                }),
+            });
+        },
+    });
+    return statefulWidget;
+}

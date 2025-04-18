@@ -316,6 +316,9 @@ function getLinkTarget(target:LinkTarget):string{
         return "_self";
     }
 }
+function SetState(id:string){
+    document.getElementById(id).dispatchEvent(new Event("reloadStatefulWidget"));
+}
 //Widgets (Functions that return HTML elements)
 //------------------------------------------------------------------------------------------------
 //Add Scaffolds in different elements called Page to support adding pages on top of one another
@@ -448,7 +451,6 @@ function TextWidget(parameters:{
     style?: TextStyle,
     link?:Link,
     id?:string,
-
 }):HTMLElement{
     //Create element
     var element:HTMLElement = document.createElement("p");
@@ -512,7 +514,62 @@ function Image(parameters:{
     return element;
 }
 //GestureDetector
-
+//Add all events from https://www.w3schools.com/jsref/dom_obj_event.asp
+function GestureDetector(parameters:{
+    onTap?:()=> void,
+    onMouseOver?:()=> void,
+    onMouseOut?:()=> void,
+    onMouseEnter?:()=> void,
+    onMouseLeave?:()=> void,
+    onKeyDown?:()=> void,
+    onOnline?:()=> void,
+    onOffline?:()=> void,
+    child:HTMLElement,
+}){
+    //Add events
+    if(parameters.onTap != null){
+        parameters.child.addEventListener("click", ()=>{
+            parameters.onTap();
+        });
+    }
+    if(parameters.onMouseOver != null){
+        parameters.child.addEventListener("mouseover", ()=>{
+            parameters.onMouseOver();
+        });
+    }
+    if(parameters.onMouseOut != null){
+        parameters.child.addEventListener("mouseout", ()=>{
+            parameters.onMouseOut();
+        });
+    }
+    if(parameters.onMouseEnter != null){
+        parameters.child.addEventListener("mouseenter", ()=>{
+            parameters.onMouseEnter();
+        });
+    }
+    if(parameters.onMouseLeave != null){
+        parameters.child.addEventListener("mouseleave", ()=>{
+            parameters.onMouseLeave();
+        });
+    }
+    if(parameters.onKeyDown != null){
+        parameters.child.addEventListener("keydown", ()=>{
+            parameters.onKeyDown();
+        });
+    }
+    if(parameters.onOnline != null){
+        parameters.child.addEventListener("online", ()=>{
+            parameters.onOnline();
+        });
+    }
+    if(parameters.onTap != null){
+        parameters.child.addEventListener("offline", ()=>{
+            parameters.onOffline();
+        });
+    }
+    //return modified element
+    return parameters.child;
+}
 //Input
 function InputField(parameters:{
     width?: Size,
@@ -596,6 +653,32 @@ function InputField(parameters:{
     return element;
 
 }
+//Stateful Widget
+function StatefulWidget(parameters:{
+    id:string,
+    child:()=>HTMLElement,
+}){
+    //Create element
+    var element:HTMLElement = document.createElement("span");
+
+    //id
+    element.id = parameters.id;
+
+    //custom element
+    const event = new Event("reloadStatefulWidget");
+
+    //Add custom event
+    element.addEventListener("reloadStatefulWidget", ()=>{
+        element.innerHTML = "";
+        element.append(parameters.child());
+    });
+
+    //Append child
+    element.append(parameters.child());
+
+    //return element
+    return element;
+}
 //FutureBuilder
 
 //Export all
@@ -616,9 +699,12 @@ export {
     LinkTarget,
     Link,
     InputType,
+    SetState,
     Scaffold,
     Container,
     TextWidget,
     Image,
     InputField,
+    StatefulWidget,
+    GestureDetector,
 };

@@ -478,10 +478,60 @@ function Image(parameters) {
     return element;
 }
 //GestureDetector
+//Add all events from https://www.w3schools.com/jsref/dom_obj_event.asp
+function GestureDetector(parameters) {
+    //Add events
+    if (parameters.onTap != null) {
+        parameters.child.addEventListener("click", () => {
+            parameters.onTap();
+        });
+    }
+    if (parameters.onMouseOver != null) {
+        parameters.child.addEventListener("mouseover", () => {
+            parameters.onMouseOver();
+        });
+    }
+    if (parameters.onMouseOut != null) {
+        parameters.child.addEventListener("mouseout", () => {
+            parameters.onMouseOut();
+        });
+    }
+    if (parameters.onMouseEnter != null) {
+        parameters.child.addEventListener("mouseenter", () => {
+            parameters.onMouseEnter();
+        });
+    }
+    if (parameters.onMouseLeave != null) {
+        parameters.child.addEventListener("mouseleave", () => {
+            parameters.onMouseLeave();
+        });
+    }
+    if (parameters.onKeyDown != null) {
+        parameters.child.addEventListener("keydown", () => {
+            parameters.onKeyDown();
+        });
+    }
+    if (parameters.onOnline != null) {
+        parameters.child.addEventListener("online", () => {
+            parameters.onOnline();
+        });
+    }
+    if (parameters.onTap != null) {
+        parameters.child.addEventListener("offline", () => {
+            parameters.onOffline();
+        });
+    }
+    //return modified element
+    return parameters.child;
+}
 //Input
 function InputField(parameters) {
     //Create element
     var element = document.createElement("input");
+    //id
+    if (parameters.id != null) {
+        element.id = parameters.id;
+    }
     //InputType
     element.type = parameters.inputType;
     //Sizing
@@ -541,7 +591,25 @@ function InputField(parameters) {
     });
     return element;
 }
+//Stateful Widget
+function StatefulWidget(parameters) {
+    //Create element
+    var element = document.createElement("span");
+    //id
+    element.id = parameters.id;
+    //custom element
+    const event = new Event("reloadStatefulWidget");
+    //Add custom event
+    element.addEventListener("reloadStatefulWidget", () => {
+        element.innerHTML = "";
+        element.append(parameters.child());
+    });
+    //Append child
+    element.append(parameters.child());
+    //return element
+    return element;
+}
 //FutureBuilder
 //Export all
 //---------------------------------------------------
-export { SizeUnit, Size, TextAlign, TextStyle, Color, BoxStyle, Border, BorderType, EdgeInsets, MainAxisAlignment, CrossAxisAlignment, FlexDirection, LinkTarget, Link, InputType, Scaffold, Container, TextWidget, Image, InputField, };
+export { SizeUnit, Size, TextAlign, TextStyle, Color, BoxStyle, Border, BorderType, EdgeInsets, MainAxisAlignment, CrossAxisAlignment, FlexDirection, LinkTarget, Link, InputType, Scaffold, Container, TextWidget, Image, InputField, StatefulWidget, GestureDetector, };
