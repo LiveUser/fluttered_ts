@@ -58,6 +58,30 @@ enum LinkTarget{
     openTab,
     sameTab,
 }
+enum InputType {
+    button = "button",
+    checkbox = "checkbox",
+    color = "color",
+    date = "date",
+    datetimeLocal = "datetime-local",
+    email = "email",
+    file = "file",
+    hidden = "hidden",
+    image = "image",
+    month = "month",
+    number = "number",
+    password = "password",
+    radio = "radio",
+    range = "range",
+    reset = "reset",
+    search = "search",
+    submit = "submit",
+    tel = "tel",
+    text = "text",
+    time = "time",
+    url = "url",
+    week = "week",
+  }
 //Classes
 //------------------------------------------------------------------------------------------------
 class Size{
@@ -341,9 +365,24 @@ function Container(parameters:{
     //Sizing
     if(parameters.width != null){
         element.style.width = stringifySize(parameters.width);
+        //Remove Margin
+        if(parameters.margin != null){
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.margin.left)} - ${stringifySize(parameters.margin.right)})`; 
+        }
+        //Remove Padding
+        if(parameters.padding != null){
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.padding.left)} - ${stringifySize(parameters.padding.right)})`; 
+        }
     }
     if(parameters.height != null){
-        element.style.height = stringifySize(parameters.height);
+        //Remove Margin
+        if(parameters.margin != null){
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.margin.top)} - ${stringifySize(parameters.margin.bottom)})`;
+        }
+        //Remove Padding
+        if(parameters.padding != null){
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.padding.top)} - ${stringifySize(parameters.padding.bottom)})`;
+        }
     }
     //Style box
     if(parameters.style != null){
@@ -408,7 +447,7 @@ function TextWidget(parameters:{
     textAlign?: TextAlign,
     style?: TextStyle,
     link?:Link,
-    //TODO: id
+    id?:string,
 
 }):HTMLElement{
     //Create element
@@ -423,6 +462,12 @@ function TextWidget(parameters:{
         (element as HTMLAnchorElement).href = parameters.link.link;
         (element as HTMLAnchorElement).target = getLinkTarget(parameters.link.target);
     }
+
+    //id
+    if(parameters.id != null){
+        element.id = parameters.id;
+    }
+
     //Add text to element
     element.innerHTML = parameters.text;
     //textAlign
@@ -469,7 +514,88 @@ function Image(parameters:{
 //GestureDetector
 
 //Input
+function InputField(parameters:{
+    width?: Size,
+    height?: Size,
+    margin?: EdgeInsets,
+    padding?: EdgeInsets,
+    inputType?:InputType,
+    style?:BoxStyle,
+    id?:string,
+    onChange?:(newValue:string) => void,
+    onInput?:(newValue:string) => void,
+}):HTMLElement{
+    //Create element
+    var element:HTMLElement = document.createElement("input");
 
+    //id
+    if(parameters.id != null){
+        element.id = parameters.id;
+    }
+    //InputType
+    (element as HTMLInputElement).type = parameters.inputType;
+
+    //Sizing
+    if(parameters.width != null){
+        element.style.width = stringifySize(parameters.width);
+        //Remove Margin
+        if(parameters.margin != null){
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.margin.left)} - ${stringifySize(parameters.margin.right)})`; 
+        }
+        //Remove Padding
+        if(parameters.padding != null){
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.padding.left)} - ${stringifySize(parameters.padding.right)})`; 
+        }
+    }
+    if(parameters.height != null){
+        //Remove Margin
+        if(parameters.margin != null){
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.margin.top)} - ${stringifySize(parameters.margin.bottom)})`;
+        }
+        //Remove Padding
+        if(parameters.padding != null){
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.padding.top)} - ${stringifySize(parameters.padding.bottom)})`;
+        }
+    }
+    //Style box
+    if(parameters.style != null){
+        if(parameters.style.color != null){
+            element.style.backgroundColor = parameters.style.color.color;
+        }
+        if(parameters.style.border != null){
+            element.style.border = stringifyBorder(parameters.style.border);
+            if(parameters.style.border.color != null){
+                element.style.borderColor = parameters.style.border.color.color;
+            }
+        }
+    }
+    //Margin
+    if(parameters.margin != null){
+        element.style.marginTop = stringifySize(parameters.margin.top);
+        element.style.marginBottom = stringifySize(parameters.margin.bottom);
+        element.style.marginLeft = stringifySize(parameters.margin.left);
+        element.style.marginRight = stringifySize(parameters.margin.right);
+    }
+
+    //Padding
+    if(parameters.padding != null){
+        element.style.paddingTop = stringifySize(parameters.padding.top);
+        element.style.paddingBottom = stringifySize(parameters.padding.bottom);
+        element.style.paddingLeft = stringifySize(parameters.padding.left);
+        element.style.paddingRight = stringifySize(parameters.padding.right);
+    }
+
+    //Attach events
+    element.addEventListener("change",()=>{
+        parameters.onChange((element as HTMLInputElement).value);
+    });
+    element.addEventListener("input",()=>{
+        parameters.onInput((element as HTMLInputElement).value);
+    });
+
+    return element;
+
+}
 //FutureBuilder
 
 //Export all
@@ -489,8 +615,10 @@ export {
     FlexDirection,
     LinkTarget,
     Link,
+    InputType,
     Scaffold,
     Container,
     TextWidget,
     Image,
+    InputField,
 };

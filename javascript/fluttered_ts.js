@@ -64,6 +64,31 @@ var LinkTarget;
     LinkTarget[LinkTarget["openTab"] = 0] = "openTab";
     LinkTarget[LinkTarget["sameTab"] = 1] = "sameTab";
 })(LinkTarget || (LinkTarget = {}));
+var InputType;
+(function (InputType) {
+    InputType["button"] = "button";
+    InputType["checkbox"] = "checkbox";
+    InputType["color"] = "color";
+    InputType["date"] = "date";
+    InputType["datetimeLocal"] = "datetime-local";
+    InputType["email"] = "email";
+    InputType["file"] = "file";
+    InputType["hidden"] = "hidden";
+    InputType["image"] = "image";
+    InputType["month"] = "month";
+    InputType["number"] = "number";
+    InputType["password"] = "password";
+    InputType["radio"] = "radio";
+    InputType["range"] = "range";
+    InputType["reset"] = "reset";
+    InputType["search"] = "search";
+    InputType["submit"] = "submit";
+    InputType["tel"] = "tel";
+    InputType["text"] = "text";
+    InputType["time"] = "time";
+    InputType["url"] = "url";
+    InputType["week"] = "week";
+})(InputType || (InputType = {}));
 //Classes
 //------------------------------------------------------------------------------------------------
 class Size {
@@ -328,9 +353,24 @@ function Container(parameters) {
     //Sizing
     if (parameters.width != null) {
         element.style.width = stringifySize(parameters.width);
+        //Remove Margin
+        if (parameters.margin != null) {
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.margin.left)} - ${stringifySize(parameters.margin.right)})`;
+        }
+        //Remove Padding
+        if (parameters.padding != null) {
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.padding.left)} - ${stringifySize(parameters.padding.right)})`;
+        }
     }
     if (parameters.height != null) {
-        element.style.height = stringifySize(parameters.height);
+        //Remove Margin
+        if (parameters.margin != null) {
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.margin.top)} - ${stringifySize(parameters.margin.bottom)})`;
+        }
+        //Remove Padding
+        if (parameters.padding != null) {
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.padding.top)} - ${stringifySize(parameters.padding.bottom)})`;
+        }
     }
     //Style box
     if (parameters.style != null) {
@@ -398,6 +438,10 @@ function TextWidget(parameters) {
         element.href = parameters.link.link;
         element.target = getLinkTarget(parameters.link.target);
     }
+    //id
+    if (parameters.id != null) {
+        element.id = parameters.id;
+    }
     //Add text to element
     element.innerHTML = parameters.text;
     //textAlign
@@ -435,7 +479,69 @@ function Image(parameters) {
 }
 //GestureDetector
 //Input
+function InputField(parameters) {
+    //Create element
+    var element = document.createElement("input");
+    //InputType
+    element.type = parameters.inputType;
+    //Sizing
+    if (parameters.width != null) {
+        element.style.width = stringifySize(parameters.width);
+        //Remove Margin
+        if (parameters.margin != null) {
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.margin.left)} - ${stringifySize(parameters.margin.right)})`;
+        }
+        //Remove Padding
+        if (parameters.padding != null) {
+            element.style.width = `calc(${element.style.width} - ${stringifySize(parameters.padding.left)} - ${stringifySize(parameters.padding.right)})`;
+        }
+    }
+    if (parameters.height != null) {
+        //Remove Margin
+        if (parameters.margin != null) {
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.margin.top)} - ${stringifySize(parameters.margin.bottom)})`;
+        }
+        //Remove Padding
+        if (parameters.padding != null) {
+            element.style.height = `calc(${element.style.height} - ${stringifySize(parameters.padding.top)} - ${stringifySize(parameters.padding.bottom)})`;
+        }
+    }
+    //Style box
+    if (parameters.style != null) {
+        if (parameters.style.color != null) {
+            element.style.backgroundColor = parameters.style.color.color;
+        }
+        if (parameters.style.border != null) {
+            element.style.border = stringifyBorder(parameters.style.border);
+            if (parameters.style.border.color != null) {
+                element.style.borderColor = parameters.style.border.color.color;
+            }
+        }
+    }
+    //Margin
+    if (parameters.margin != null) {
+        element.style.marginTop = stringifySize(parameters.margin.top);
+        element.style.marginBottom = stringifySize(parameters.margin.bottom);
+        element.style.marginLeft = stringifySize(parameters.margin.left);
+        element.style.marginRight = stringifySize(parameters.margin.right);
+    }
+    //Padding
+    if (parameters.padding != null) {
+        element.style.paddingTop = stringifySize(parameters.padding.top);
+        element.style.paddingBottom = stringifySize(parameters.padding.bottom);
+        element.style.paddingLeft = stringifySize(parameters.padding.left);
+        element.style.paddingRight = stringifySize(parameters.padding.right);
+    }
+    //Attach events
+    element.addEventListener("change", () => {
+        parameters.onChange(element.value);
+    });
+    element.addEventListener("input", () => {
+        parameters.onInput(element.value);
+    });
+    return element;
+}
 //FutureBuilder
 //Export all
 //---------------------------------------------------
-export { SizeUnit, Size, TextAlign, TextStyle, Color, BoxStyle, Border, BorderType, EdgeInsets, MainAxisAlignment, CrossAxisAlignment, FlexDirection, LinkTarget, Link, Scaffold, Container, TextWidget, Image, };
+export { SizeUnit, Size, TextAlign, TextStyle, Color, BoxStyle, Border, BorderType, EdgeInsets, MainAxisAlignment, CrossAxisAlignment, FlexDirection, LinkTarget, Link, InputType, Scaffold, Container, TextWidget, Image, InputField, };
